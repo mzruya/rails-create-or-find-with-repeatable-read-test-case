@@ -11,7 +11,7 @@ Given how common it is for application code to already be running within an exis
 
 I do not think it's possible to implement this behavior in a consistent way across isolation levels, but it seems like an important detail that's currently missing from the [docs](https://apidock.com/rails/v6.0.0/ActiveRecord/Relation/create_or_find_by).
 
-### A more thorough explanation
+### Reproduction
 
 Repeatable read guarantees a consistent snapshot of the database, in innodb, the snapshot is established during the [first read](https://dev.mysql.com/doc/refman/8.0/en/innodb-transaction-isolation-levels.html). This means that if our transaction performed a read before a record is created by another transaction, we won't "see" it. In respect to unqiueness constraints, if we try inserting a record that violates it, the database will still protect us, but if we try querying for the record, it'll seem like it doesn't exist.
 
