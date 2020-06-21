@@ -15,5 +15,5 @@ I do not think it's possible to implement this behavior in a consistent way acro
 
 Repeatable read guarantees a consistent snapshot of the database, in innodb, the snapshot is established during the [first read](https://dev.mysql.com/doc/refman/8.0/en/innodb-transaction-isolation-levels.html). This means that if our transaction performed a read before a record is created by another transaction, we won't "see" it. In respect to unqiueness constraints, if we try inserting a record that violates it, the database will still protect us, but if we try querying for the record, it'll seem like it doesn't exist.
 
-I created a few [test cases](https://github.com/mzruya/rails-create-or-find-with-repeatable-read-test-case/blob/master/test/models/employee_test.rb#L60) that demonstrate this issue. 
+I created a few [test cases](https://gist.github.com/mzruya/603f722ede1615fd7957cfd95a4d466c#file-test_create_or_find_by_race_condition-rb-L106) that demonstrate this issue. 
 
