@@ -1,15 +1,15 @@
-`ActiveRecord::Base.create_or_find_by/!` attempts improve on `ActiveRecord::Base.create_or_find_by/!` by avoiding race conditions that the previous implementation was susceptible to.
+[`ActiveRecord::Base.create_or_find_by/!`](https://apidock.com/rails/v6.0.0/ActiveRecord/Relation/create_or_find_by) attempts improve on [`ActiveRecord::Base.find_or_create_by/!`](https://apidock.com/rails/v6.0.0/ActiveRecord/Relation/find_or_create_by) by avoiding race conditions that the previous implementation was susceptible to.
 
 `create_or_find_by` attempts to first create the record while relying on the database uniqueness constraint to inform us if it already exists.
 When the record does exist, it catches an exception and finds the record using the attributes provided. 
 
-My initial expectaton from this method was that it's expected to return a record if used properly. even in concurrent situations.
+My initial expectaton from this method was that if used properly, it's expected to return a record, even in concurrent situations.
 
 The new strategy is still susceptible to race conditions, which are not mentioned in the docs, the behavior in these cases is dependent on the database isolation level. More concretely, `create_or_find_by` could raise a `RecordNotFound` if called from within an existing transaction in a repeatable reads isolation level.
 
-Given how common it is for application code to already be running within an existing transaction (For example, code inside callbacks), and the fact that repeatable reads is the default isolation level for mysql, I think this is a fairly common use case. ,
+Given how common it is for application code to already be running within an existing transaction (For example, code inside callbacks), and the fact that repeatable reads is the default isolation level for mysql, I think this is a fairly common use case.
 
-the [`ActiveRecord::Base.create_or_find_by/!` docs](https://apidock.com/rails/v6.0.0/ActiveRecord/Relation/create_or_find_by) already mentions a few drawbacks to this approach, which I'll gladly submit a PR to improve on.
+I do not think it's possible to implement this behavior in a consistent way across isolation levels, but it seems like an important detail that's currently missing from the [docs](https://apidock.com/rails/v6.0.0/ActiveRecord/Relation/create_or_find_by).
 
 ### A more thorough explanation
 
